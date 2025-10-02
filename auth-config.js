@@ -2,40 +2,40 @@ const bcrypt = require('bcryptjs');
 
 // Configuración de usuarios del sistema
 const users = [
-    {
-        id: 1,
-        username: 'admin',
-        password: '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-        role: 'admin',
-        fullName: 'Administrador del Sistema',
-        email: 'admin@nbteamconsulting.com',
-        createdAt: new Date().toISOString()
-    },
-    {
-        id: 2,
-        username: 'hr',
-        password: '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-        role: 'hr',
-        fullName: 'Equipo de Recursos Humanos',
-        email: 'hr@nbteamconsulting.com',
-        createdAt: new Date().toISOString()
-    },
-    {
-        id: 3,
-        username: 'it',
-        password: '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-        role: 'it',
-        fullName: 'Equipo de IT',
-        email: 'it@nbteamconsulting.com',
-        createdAt: new Date().toISOString()
-    },
+           {
+               id: 1,
+               username: 'admin',
+               password: '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+               role: 'admin',
+               fullName: 'Administrador del Sistema',
+               email: 'admintest@nbteamconsulting.com',
+               createdAt: new Date().toISOString()
+           },
+           {
+               id: 2,
+               username: 'hr',
+               password: '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+               role: 'hr',
+               fullName: 'Equipo de Recursos Humanos',
+               email: 'hrtest@nbteamconsulting.com',
+               createdAt: new Date().toISOString()
+           },
+           {
+               id: 3,
+               username: 'it',
+               password: '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+               role: 'it',
+               fullName: 'Equipo de IT',
+               email: 'ittest@nbteamconsulting.com',
+               createdAt: new Date().toISOString()
+           },
     {
         id: 4,
         username: 'solicitante',
         password: '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
         role: 'solicitante',
         fullName: 'Gerencia General',
-        email: 'gerencia@nbteamconsulting.com',
+        email: 'gerenciatest@nbteamconsulting.com',
         createdAt: new Date().toISOString()
     }
 ];
