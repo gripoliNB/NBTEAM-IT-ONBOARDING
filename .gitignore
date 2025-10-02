@@ -1,0 +1,57 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+formularios.db
+
+# AWS Configuration files (PROTEGEMOS CREDENCIALES)
+aws-email-service.js
+email-service.js
+test-aws-ses.js
+.env
+
+# Logs
+logs/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Backup files
+Backup-*/
+*.zip
+*.rar
+*.7z
+
+# Temporary files
+tmp/
+temp/
+
+# Build artifacts
+dist/
+build/

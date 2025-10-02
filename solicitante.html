@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitante - Sistema de Onboarding</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 400px;
+            margin: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23ffffff'%%3E%3Cpath d='M0 30V0h30v30H0zm30-30v30h30V0H30z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+            opacity: 0.05;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            font-weight: 300;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .user-info {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .user-info .role {
+            background: #17a2b8;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .content {
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .main-action {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: block;
+        }
+
+        .main-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .main-action h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .main-action p {
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .info-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .info-section h4 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .info-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .info-section li {
+            padding: 8px 0;
+            color: #6c757d;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .info-section li::before {
+            content: '✓';
+            color: #28a745;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            background: #545b62;
+            transform: translateY(-1px);
+        }
+
+        .message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #28a745;
+            text-align: left;
+        }
+
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left-color: #ffc107;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .content {
+                padding: 30px 20px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👋 Solicitud de Empleado</h1>
+            <p>Sistema de Onboarding NBTeam</p>
+        </div>
+
+        <div class="user-info">
+            <strong id="username">Usuario</strong>
+            <div class="role" id="user-role">Solicitante</div>
+        </div>
+
+        <div class="content">
+            <div class="message">
+                <strong>¡Bienvenido al Sistema de Solicitudes!</strong><br>
+                Como solicitante, puedes crear nuevos formularios de solicitud de empleado.
+            </div>
+
+            <a href="/index.html" class="main-action" id="main-action">
+                <h3>📝 Crear Nueva Solicitud</h3>
+                <p>Completa el formulario para solicitar el acceso de un nuevo empleado al sistema</p>
+            </a>
+
+            <a href="/reports_solicitante.html" class="main-action">
+                <h3>📊 Ver Mis Solicitudes</h3>
+                <p>Consulta el estado de todas tus solicitudes y su progreso en el proceso</p>
+            </a>
+
+            <div class="info-section">
+                <h4>🎯 Capacidades del Solicitante:</h4>
+                <ul>
+                    <li>Crear nuevos formularios de solicitud</li>
+                    <li>Completar toda la información requerida</li>
+                    <li>Adjuntar detalles del hardware necesario</li>
+                    <li>Especificar software y capacitaciones</li>
+                    <li>Enviar solicitud para revisión</li>
+                    <li>Consultar el estado de tus solicitudes</li>
+                    <li>Verificar el progreso de cada proceso</li>
+                </ul>
+            </div>
+
+            <div class="info-section warning">
+                <h4>❌ Limitaciones del Solicitante:</h4>
+                <ul>
+                    <li>No puede editar formularios existentes</li>
+                    <li>No puede aprobar o rechazar solicitudes</li>
+                    <li>No tiene acceso a funciones administrativas</li>
+                    <li>No puede gestionar usuarios del sistema</li>
+                </ul>
+            </div>
+
+            <div class="btn-container">
+                <button onclick="logout()" class="btn">🚪 Cerrar Sesión</button>
+            </div>
+
+            <div class="footer">
+                <p>Para solicitar permisos adicionales, contacta al administrador del sistema</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Verificar autenticación al cargar la página
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('/api/auth/check', {
+                    credentials: 'include'
+                });
+                
+                const result = await response.json();
+                
+                if (!result.success || !result.authenticated) {
+                    window.location.href = '/login.html';
+                } else if (result.user.role !== 'solicitante') {
+                    // Si no es solicitante, redirigir al dashboard normal
+                    window.location.href = '/dashboard.html';
+                } else {
+                    // Mostrar información del usuario
+                    document.getElementById('username').textContent = result.user.fullName || result.user.username;
+                    document.getElementById('user-role').textContent = 'Solicitante';
+                }
+            } catch (error) {
+                console.error('Error verificando autenticación:', error);
+                window.location.href = '/login.html';
+            }
+        });
+
+        // Función para cerrar sesión
+        async function logout() {
+            try {
+                await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                window.location.href = '/login.html';
+            } catch (error) {
+                console.error('Error cerrando sesión:', error);
+                // Redirigir de todos modos
+                window.location.href = '/login.html';
+            }
+        }
+    </script>
+</body>
+</html>
+

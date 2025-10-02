@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Clientes - NBTeam IT Onboarding</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #4a5568;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #4299e1;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3182ce;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #e53e3e;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #a0aec0;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #718096;
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section h2 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #4a5568;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .table th,
+        .table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .table th {
+            background: #f7fafc;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .table tbody tr:hover {
+            background: #f7fafc;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status-inactive {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #718096;
+        }
+
+        .error {
+            background: #fed7d7;
+            color: #742a2a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #f56565;
+        }
+
+        .success {
+            background: #c6f6d5;
+            color: #22543d;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #48bb78;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            color: #4a5568;
+            font-size: 1.5rem;
+        }
+
+        .close {
+            color: #a0aec0;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: #f56565;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .nav-buttons {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏢 Gestión de Clientes</h1>
+            <div class="nav-buttons">
+                <a href="dashboard.html" class="btn btn-secondary">📊 Dashboard</a>
+                <a href="users.html" class="btn btn-secondary">👥 Usuarios</a>
+                <button onclick="logout()" class="btn btn-danger">🚪 Cerrar Sesión</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- Mensajes -->
+            <div id="messageContainer"></div>
+
+            <!-- Formulario de Cliente -->
+            <div class="form-section">
+                <h2 id="formTitle">➕ Agregar Nuevo Cliente</h2>
+                <form id="clienteForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="nombre">Nombre del Cliente *</label>
+                            <input type="text" id="nombre" name="nombre" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="activo">Estado</label>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="activo" name="activo" checked>
+                                <label for="activo">Cliente Activo</label>
+                            </div>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="descripcion">Descripción</label>
+                            <textarea id="descripcion" name="descripcion" placeholder="Descripción opcional del cliente..."></textarea>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="submit" class="btn btn-success">💾 Guardar Cliente</button>
+                        <button type="button" onclick="resetForm()" class="btn btn-secondary">🔄 Limpiar</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Lista de Clientes -->
+            <div class="form-section">
+                <h2>📋 Lista de Clientes</h2>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Estado</th>
+                                <th>Fecha Creación</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clientesTableBody">
+                            <tr>
+                                <td colspan="6" class="loading">Cargando clientes...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>⚠️ Confirmar Eliminación</h3>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <p>¿Estás seguro de que deseas eliminar este cliente?</p>
+            <p><strong>Esta acción no se puede deshacer.</strong></p>
+            <div class="modal-footer">
+                <button onclick="closeModal()" class="btn btn-secondary">Cancelar</button>
+                <button onclick="confirmDelete()" class="btn btn-danger">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let editingClienteId = null;
+        let deleteClienteId = null;
+
+        // Verificar autenticación al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+        });
+
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/auth/check');
+                const data = await response.json();
+                
+                if (data.success && data.authenticated) {
+                    currentUser = data.user;
+                    
+                    // Verificar que sea administrador
+                    if (currentUser.role !== 'admin') {
+                        showMessage('Acceso denegado. Solo los administradores pueden acceder a esta página.', 'error');
+                        setTimeout(() => {
+                            window.location.href = 'dashboard.html';
+                        }, 3000);
+                        return;
+                    }
+                    
+                    loadClientes();
+                } else {
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+                console.error('Error verificando autenticación:', error);
+                window.location.href = 'login.html';
+            }
+        }
+
+        async function loadClientes() {
+            try {
+                const response = await fetch('/api/clientes');
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayClientes(data.data);
+                } else {
+                    showMessage('Error al cargar clientes: ' + data.error, 'error');
+                }
+            } catch (error) {
+                console.error('Error cargando clientes:', error);
+                showMessage('Error al cargar clientes', 'error');
+            }
+        }
+
+        function displayClientes(clientes) {
+            const tbody = document.getElementById('clientesTableBody');
+            
+            if (clientes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="loading">No hay clientes registrados</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = clientes.map(cliente => `
+                <tr>
+                    <td>${cliente.id}</td>
+                    <td>${cliente.nombre}</td>
+                    <td>${cliente.descripcion || '-'}</td>
+                    <td>
+                        <span class="status-badge ${cliente.activo ? 'status-active' : 'status-inactive'}">
+                            ${cliente.activo ? 'Activo' : 'Inactivo'}
+                        </span>
+                    </td>
+                    <td>${new Date(cliente.created_at).toLocaleDateString()}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button onclick="editCliente(${cliente.id})" class="btn btn-primary btn-sm">✏️ Editar</button>
+                            <button onclick="deleteCliente(${cliente.id})" class="btn btn-danger btn-sm">🗑️ Eliminar</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Manejar envío del formulario
+        document.getElementById('clienteForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const clienteData = {
+                nombre: formData.get('nombre'),
+                descripcion: formData.get('descripcion'),
+                activo: formData.get('activo') === 'on'
+            };
+            
+            try {
+                let response;
+                if (editingClienteId) {
+                    // Actualizar cliente existente
+                    response = await fetch(`/api/clientes/${editingClienteId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(clienteData)
+                    });
+                } else {
+                    // Crear nuevo cliente
+                    response = await fetch('/api/clientes', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(clienteData)
+                    });
+                }
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage(data.message, 'success');
+                    resetForm();
+                    loadClientes();
+                } else {
+                    showMessage('Error: ' + data.error, 'error');
+                }
+            } catch (error) {
+                console.error('Error guardando cliente:', error);
+                showMessage('Error al guardar cliente', 'error');
+            }
+        });
+
+        async function editCliente(id) {
+            try {
+                const response = await fetch(`/api/clientes/${id}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const cliente = data.data;
+                    document.getElementById('nombre').value = cliente.nombre;
+                    document.getElementById('descripcion').value = cliente.descripcion || '';
+                    document.getElementById('activo').checked = cliente.activo;
+                    
+                    editingClienteId = id;
+                    document.getElementById('formTitle').textContent = '✏️ Editar Cliente';
+                    document.querySelector('button[type="submit"]').textContent = '💾 Actualizar Cliente';
+                    
+                    // Scroll al formulario
+                    document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    showMessage('Error al cargar cliente: ' + data.error, 'error');
+                }
+            } catch (error) {
+                console.error('Error cargando cliente:', error);
+                showMessage('Error al cargar cliente', 'error');
+            }
+        }
+
+        function deleteCliente(id) {
+            deleteClienteId = id;
+            document.getElementById('confirmModal').style.display = 'block';
+        }
+
+        async function confirmDelete() {
+            try {
+                const response = await fetch(`/api/clientes/${deleteClienteId}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage(data.message, 'success');
+                    loadClientes();
+                } else {
+                    showMessage('Error: ' + data.error, 'error');
+                }
+            } catch (error) {
+                console.error('Error eliminando cliente:', error);
+                showMessage('Error al eliminar cliente', 'error');
+            } finally {
+                closeModal();
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('clienteForm').reset();
+            editingClienteId = null;
+            document.getElementById('formTitle').textContent = '➕ Agregar Nuevo Cliente';
+            document.querySelector('button[type="submit"]').textContent = '💾 Guardar Cliente';
+        }
+
+        function closeModal() {
+            document.getElementById('confirmModal').style.display = 'none';
+            deleteClienteId = null;
+        }
+
+        function showMessage(message, type) {
+            const container = document.getElementById('messageContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = type;
+            messageDiv.textContent = message;
+            
+            container.innerHTML = '';
+            container.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
+
+        async function logout() {
+            try {
+                await fetch('/api/auth/logout', { method: 'POST' });
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error('Error cerrando sesión:', error);
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Cerrar modal al hacer clic fuera
+        window.onclick = function(event) {
+            const modal = document.getElementById('confirmModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Empleados</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- CDN alternativa por si falla la principal -->
+    <script>
+        // Verificar si jsPDF se cargó correctamente
+        window.addEventListener('load', function() {
+            if (!window.jspdf) {
+                console.log('jsPDF no se cargó desde CDN principal, intentando CDN alternativa...');
+                const script = document.createElement('script');
+                script.src = 'https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js';
+                script.onload = function() {
+                    console.log('jsPDF cargado desde CDN alternativa');
+                };
+                script.onerror = function() {
+                    console.error('Error cargando jsPDF desde CDN alternativa');
+                };
+                document.head.appendChild(script);
+            } else {
+                console.log('jsPDF cargado correctamente desde CDN principal');
+            }
+        });
+    </script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e1e5e9;
+        }
+
+        .header-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 15px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background-image: url('logo.jpg');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .company-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #007bff;
+            line-height: 1.2;
+        }
+
+        .company-tagline {
+            font-size: 0.85rem;
+            color: #666;
+            font-weight: 500;
+            line-height: 1.2;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #555;
+            font-size: 1rem;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        select,
+        textarea {
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .hardware-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .hardware-details {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-col {
+            flex: 1;
+        }
+
+        .form-col label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #495057;
+            font-size: 13px;
+        }
+
+        .form-col input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+
+        .form-col input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .training-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .software-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .clients-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: normal;
+        }
+
+        .radio-label:hover {
+            border-color: #007bff;
+            background-color: #f8f9ff;
+        }
+
+        .radio-label input[type="radio"] {
+            margin: 0;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .radio-text {
+            font-size: 0.95rem;
+            line-height: 1.4;
+            color: #555;
+        }
+
+        .radio-label:has(input:checked) {
+            border-color: #007bff;
+            background-color: #e3f2fd;
+        }
+
+        .radio-label:has(input:checked) .radio-text {
+            color: #007bff;
+            font-weight: 500;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: normal;
+        }
+
+        .checkbox-label:hover {
+            border-color: #007bff;
+            background-color: #f8f9ff;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            margin: 0;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-text {
+            font-size: 0.95rem;
+            line-height: 1.4;
+            color: #555;
+        }
+
+        .checkbox-label input[type="checkbox"]:checked + .checkbox-text {
+            color: #007bff;
+            font-weight: 500;
+        }
+        
+        .checkbox-label:has(input:checked) {
+            border-color: #007bff;
+            background-color: #e3f2fd;
+        }
+
+        .checkbox-label:has(input:checked) .checkbox-text {
+            color: #007bff;
+            font-weight: 500;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #0056b3, #004085);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+            align-items: center;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .button-group .btn {
+            flex: 1;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .logo {
+                justify-content: center;
+            }
+            
+            .logo-icon {
+                font-size: 2rem;
+            }
+            
+            .company-name {
+                font-size: 1.2rem;
+            }
+            
+            .company-tagline {
+                font-size: 0.8rem;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .software-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <div class="logo-text">
+                    <span class="company-name">NBTeam</span>
+                    <span class="company-tagline">IT Onboarding</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <h1>Formulario de Empleado</h1>
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" onclick="goToDashboard()">
+                        🏠 Dashboard
+                    </button>
+                    <button class="btn btn-info" onclick="goToList()">
+                        📋 Lista de Formularios
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <form id="employeeForm" class="form">
+            <div class="form-group">
+                <label for="employeeNumber">Número de Empleado</label>
+                <input
+                    type="text"
+                    id="employeeNumber"
+                    name="employeeNumber"
+                    placeholder="Ej: EMP001"
+                />
+            </div>
+
+            <div class="form-group">
+                <label for="fullName">Nombre Completo *</label>
+                <input
+                    type="text"
+                    id="fullName"
+                    name="fullName"
+                    required
+                    placeholder="Ej: Juan Pérez García"
+                />
+            </div>
+
+            <div class="form-group">
+                <label for="emailPersonal">Correo Electrónico Personal</label>
+                <input
+                    type="email"
+                    id="emailPersonal"
+                    name="emailPersonal"
+                    placeholder="Ej: juan.perez@gmail.com"
+                />
+            </div>
+
+            <div class="form-group">
+                <label for="rol">Rol</label>
+                <input
+                    type="text"
+                    id="rol"
+                    name="rol"
+                    placeholder="Ej: Desarrollador Senior, Analista de Sistemas"
+                />
+            </div>
+
+            <div class="form-group">
+                <label for="department">Departamento *</label>
+                <select id="department" name="department" required>
+                    <option value="">Selecciona un departamento</option>
+                    <option value="Operacion">Operacion</option>
+                    <option value="Soporte">Soporte</option>
+                    <option value="Finanzas">Finanzas</option>
+                    <option value="Ventas">Ventas</option>
+                    <option value="Recursos Humanos">Recursos Humanos</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="centroCostos">Centro de Costos</label>
+                <input
+                    type="text"
+                    id="centroCostos"
+                    name="centroCostos"
+                    placeholder="Ej: CC001, CC-IT-2024"
+                />
+            </div>
+
+            <div class="form-group">
+                <label for="tipoContrato">Tipo de Contrato *</label>
+                <select id="tipoContrato" name="tipoContrato" required>
+                    <option value="">Selecciona un tipo de contrato</option>
+                    <option value="Empleado Fijo">Empleado Fijo</option>
+                    <option value="Contratado Fijo">Contratado Fijo</option>
+                    <option value="Contratado a Demanda">Contratado a Demanda</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="startDate">Fecha de Inicio *</label>
+                <input
+                    type="date"
+                    id="startDate"
+                    name="startDate"
+                    required
+                />
+            </div>
+
+            <div class="form-group">
+                <label>Hardware *</label>
+                <div class="hardware-list">
+                    <label class="radio-label">
+                        <input type="radio" name="hardware" value="Windows Laptop (Standard)" required />
+                        <span class="radio-text">Windows Laptop (Standard)</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="hardware" value="MacBook Pro (Standard)" required />
+                        <span class="radio-text">MacBook Pro (Standard)</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="hardware" value="Escritorio Remoto" required />
+                        <span class="radio-text">Escritorio Remoto</span>
+                    </label>
+                </div>
+                
+                <!-- Campos detallados del hardware -->
+                <div class="hardware-details" id="hardwareDetails" style="margin-top: 15px; padding: 15px; background-color: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef;">
+                    <h4 style="margin: 0 0 15px 0; color: #495057; font-size: 14px;">Detalles del Hardware</h4>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label for="hardwareBrand">Marca</label>
+                            <input type="text" id="hardwareBrand" name="hardwareBrand" placeholder="Ej: Dell, HP, Apple" />
+                        </div>
+                        <div class="form-col">
+                            <label for="hardwareModel">Modelo</label>
+                            <input type="text" id="hardwareModel" name="hardwareModel" placeholder="Ej: Latitude 5520, MacBook Pro 16" />
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label for="hardwareSerial">Número de Serie</label>
+                            <input type="text" id="hardwareSerial" name="hardwareSerial" placeholder="Número de serie del equipo" />
+                        </div>
+                        <div class="form-col">
+                            <label for="hardwareAccessories">Accesorios</label>
+                            <input type="text" id="hardwareAccessories" name="hardwareAccessories" placeholder="Mouse, teclado, monitor, etc." />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Capacitaciones *</label>
+                <div class="training-list">
+                    <label class="checkbox-label">
+                        <input type="checkbox" value="Onboarding de Seguridad" />
+                        <span class="checkbox-text">Onboarding de Seguridad</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" value="Explicar políticas de seguridad de la información (uso de contraseñas, acceso a redes, etc.)" />
+                        <span class="checkbox-text">Explicar políticas de seguridad de la información (uso de contraseñas, acceso a redes, etc.)</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" value="Capacitación básica sobre uso de herramientas y aplicaciones internas" />
+                        <span class="checkbox-text">Capacitación básica sobre uso de herramientas y aplicaciones internas</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Software Requerido *</label>
+                <div class="software-list" id="softwareList">
+                    <!-- Los checkboxes se generarán dinámicamente -->
+                    <!-- Fallback: checkboxes estáticos si JavaScript falla -->
+                    <noscript>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="Microsoft Office" />
+                            <span class="checkbox-text">Microsoft Office</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="Visual Studio Code" />
+                            <span class="checkbox-text">Visual Studio Code</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="Git" />
+                            <span class="checkbox-text">Git</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="Docker" />
+                            <span class="checkbox-text">Docker</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="Postman" />
+                            <span class="checkbox-text">Postman</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="Slack" />
+                            <span class="checkbox-text">Slack</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="Teams" />
+                            <span class="checkbox-text">Teams</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="ZOOM" />
+                            <span class="checkbox-text">ZOOM</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="Solman" />
+                            <span class="checkbox-text">Solman</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="Acceso a impresoras y dispositivos" />
+                            <span class="checkbox-text">Acceso a impresoras y dispositivos</span>
+                        </label>
+                    </noscript>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Clientes Asignados</label>
+                <div class="clients-list" id="clientsList">
+                    <div class="loading">Cargando clientes...</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="observations">Observaciones</label>
+                <textarea
+                    id="observations"
+                    name="observations"
+                    placeholder="Observaciones adicionales (máximo 100 caracteres)"
+                    maxlength="100"
+                    rows="3"
+                ></textarea>
+            </div>
+
+            <div id="message"></div>
+
+            <div class="actions">
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">
+                        💾 Solo Guardar
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="generatePDFAndSave()">
+                        📄 Guardar y Generar PDF
+                    </button>
+                </div>
+                <a href="/list.html" class="btn btn-secondary">
+                    📋 Ver Formularios Guardados
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Lista de software disponible
+        const softwareOptions = [
+            'Crear / Activar cuenta de correo electrónico corporativo',
+            'Power BI',
+            'Appd financiera QuickBook',
+            'Avast',
+            'Microsoft 365',
+            'Project',
+            'Teams',
+            'Bamboo',
+            'Acrobat',
+            'Dialpad',
+            'Office 365',
+            'Hubspot',
+            'Harverst',
+            'Pamet Each',
+            'SAP for ME',
+            'ZOOM',
+            'Solman',
+            'Acceso a impresoras y dispositivos'
+        ];
+
+        // Generar checkboxes dinámicamente
+        function generateSoftwareCheckboxes() {
+            console.log('🔄 Generando checkboxes de software...');
+            const softwareList = document.getElementById('softwareList');
+            console.log('Elemento softwareList encontrado:', !!softwareList);
+            console.log('Opciones de software:', softwareOptions.length);
+            
+            if (!softwareList) {
+                console.error('❌ No se encontró el elemento softwareList');
+                console.error('Elementos disponibles:', document.querySelectorAll('[id]'));
+                return false;
+            }
+            
+            // Limpiar contenido existente
+            softwareList.innerHTML = '';
+            console.log('Contenido limpiado');
+            
+            let successCount = 0;
+            softwareOptions.forEach((software, index) => {
+                try {
+                    const label = document.createElement('label');
+                    label.className = 'checkbox-label';
+                    label.innerHTML = `
+                        <input type="checkbox" value="${software}" />
+                        <span class="checkbox-text">${software}</span>
+                    `;
+                    
+                    // Agregar evento para cambiar estilo cuando se selecciona
+                    const checkbox = label.querySelector('input[type="checkbox"]');
+                    checkbox.addEventListener('change', function() {
+                        if (this.checked) {
+                            label.style.borderColor = '#007bff';
+                            label.style.backgroundColor = '#e3f2fd';
+                            label.querySelector('.checkbox-text').style.color = '#007bff';
+                            label.querySelector('.checkbox-text').style.fontWeight = '500';
+                        } else {
+                            label.style.borderColor = '#e1e5e9';
+                            label.style.backgroundColor = 'white';
+                            label.querySelector('.checkbox-text').style.color = '#555';
+                            label.querySelector('.checkbox-text').style.fontWeight = 'normal';
+                        }
+                    });
+                    
+                    softwareList.appendChild(label);
+                    successCount++;
+                    console.log(`✅ Checkbox ${index + 1} agregado: ${software}`);
+                } catch (error) {
+                    console.error(`❌ Error agregando checkbox ${index + 1}:`, error);
+                }
+            });
+            
+            console.log(`✅ ${successCount}/${softwareOptions.length} checkboxes generados exitosamente`);
+            return successCount > 0;
+        }
+
+        // Función para convertir imagen a base64
+        function imageToBase64(imagePath) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                
+                // Timeout para evitar que se cuelgue
+                const timeout = setTimeout(() => {
+                    console.log('Timeout al cargar imagen del logo, usando versión de texto');
+                    resolve(null);
+                }, 3000);
+                
+                img.onload = function() {
+                    clearTimeout(timeout);
+                    try {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        ctx.drawImage(img, 0, 0);
+                        const dataURL = canvas.toDataURL('image/jpeg');
+                        resolve(dataURL);
+                    } catch (error) {
+                        console.log('Error al procesar imagen del logo:', error);
+                        resolve(null);
+                    }
+                };
+                
+                img.onerror = function() {
+                    clearTimeout(timeout);
+                    console.log('No se pudo cargar la imagen del logo, usando versión de texto');
+                    resolve(null);
+                };
+                
+                img.src = imagePath;
+            });
+        }
+
+        // Función de respaldo para generar PDF básico
+        function generateBasicPDF(formData) {
+            console.log('Generando PDF básico como respaldo...');
+            
+            try {
+                // Crear contenido HTML para imprimir
+                const htmlContent = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Formulario de Onboarding - ${formData.fullName}</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; }
+                            .header { text-align: center; margin-bottom: 30px; }
+                            .logo { background-color: #28a745; color: white; padding: 10px; display: inline-block; border-radius: 5px; }
+                            .section { margin: 20px 0; }
+                            .section h3 { color: #007bff; border-bottom: 2px solid #007bff; padding-bottom: 5px; }
+                            .field { margin: 10px 0; }
+                            .field strong { display: inline-block; width: 150px; }
+                            .list { margin-left: 20px; }
+                            .list li { margin: 5px 0; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <div class="logo">NBTeam IT</div>
+                            <h1>Formulario de Onboarding</h1>
+                        </div>
+                        
+                        <div class="section">
+                            <h3>Información del Empleado</h3>
+                            <div class="field"><strong>Número de Empleado:</strong> ${formData.employeeNumber || 'N/A'}</div>
+                            <div class="field"><strong>Nombre Completo:</strong> ${formData.fullName}</div>
+                            <div class="field"><strong>Departamento:</strong> ${formData.department}</div>
+                            ${formData.centroCostos ? `<div class="field"><strong>Centro de Costos:</strong> ${formData.centroCostos}</div>` : ''}
+                            <div class="field"><strong>Tipo de Contrato:</strong> ${formData.tipoContrato}</div>
+                            <div class="field"><strong>Fecha de Inicio:</strong> ${formData.startDate}</div>
+                        </div>
+                        
+                        <div class="section">
+                            <h3>Hardware Asignado</h3>
+                            <div class="field"><strong>Tipo:</strong> ${formData.hardware}</div>
+                            <div class="field"><strong>Marca:</strong> ${formData.hardwareBrand || 'N/A'}</div>
+                            <div class="field"><strong>Modelo:</strong> ${formData.hardwareModel || 'N/A'}</div>
+                            <div class="field"><strong>Número de Serie:</strong> ${formData.hardwareSerial || 'N/A'}</div>
+                            <div class="field"><strong>Accesorios:</strong> ${formData.hardwareAccessories || 'N/A'}</div>
+                        </div>
+                        
+                        <div class="section">
+                            <h3>Capacitaciones</h3>
+                            <ul class="list">
+                                ${formData.trainings.map(training => `<li>${training}</li>`).join('')}
+                            </ul>
+                        </div>
+                        
+                        <div class="section">
+                            <h3>Software Requerido</h3>
+                            <ul class="list">
+                                ${formData.softwareRequirements.map(software => `<li>${software}</li>`).join('')}
+                            </ul>
+                        </div>
+                        
+                        <div class="section">
+                            <p><strong>Fecha de Generación:</strong> ${new Date().toLocaleDateString()}</p>
+                            <p><strong>Creado por:</strong> ${formData.createdBy || 'Usuario'}</p>
+                        </div>
+                    </body>
+                    </html>
+                `;
+                
+                // Crear ventana de impresión
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(htmlContent);
+                printWindow.document.close();
+                
+                // Esperar a que se cargue y luego imprimir
+                printWindow.onload = function() {
+                    printWindow.print();
+                    printWindow.close();
+                };
+                
+                console.log('PDF básico generado exitosamente');
+                return true;
+                
+            } catch (error) {
+                console.error('Error generando PDF básico:', error);
+                return false;
+            }
+        }
+
+        // Función para generar documento PDF
+        async function generatePDFDocument(formData) {
+            console.log('Iniciando generación de PDF con datos:', formData);
+            
+            try {
+                // Verificar que jsPDF esté disponible
+                if (!window.jspdf) {
+                    throw new Error('jsPDF no está cargado. Verifica la conexión a internet.');
+                }
+                
+                const { jsPDF } = window.jspdf;
+                console.log('jsPDF cargado:', !!jsPDF);
+                
+                if (!jsPDF) {
+                    throw new Error('jsPDF no está disponible en window.jspdf');
+                }
+                
+                const doc = new jsPDF();
+                console.log('Documento PDF creado');
+                
+                // Configuración de páginas
+                const pageHeight = doc.internal.pageSize.height;
+                const pageWidth = doc.internal.pageSize.width;
+                const margin = 20;
+                const contentHeight = pageHeight - (margin * 2);
+                const footerHeight = 30;
+                const maxContentHeight = contentHeight - footerHeight;
+                
+                console.log('Configuración de páginas:', {
+                    pageHeight,
+                    pageWidth,
+                    margin,
+                    contentHeight,
+                    maxContentHeight
+                });
+                
+                // Configuración de colores
+                const primaryColor = [0, 123, 255]; // Azul corporativo
+                const textColor = [51, 51, 51]; // Gris oscuro
+                const lightGray = [200, 200, 200]; // Gris claro
+                
+                // Función auxiliar para manejar salto de página
+                function checkPageBreak(yPosition, lineHeight = 6) {
+                    if (yPosition + lineHeight > maxContentHeight) {
+                        doc.addPage();
+                        console.log('Nueva página agregada');
+                        return margin + 20; // Volver al inicio de la nueva página
+                    }
+                    return yPosition;
+                }
+                
+                // Función auxiliar para agregar texto con salto de página automático
+                function addTextWithPageBreak(text, x, y, options = {}) {
+                    const { maxWidth = 160, fontSize = 10, fontStyle = 'normal' } = options;
+                    
+                    doc.setFontSize(fontSize);
+                    doc.setFont('helvetica', fontStyle);
+                    
+                    // Dividir texto en líneas si es necesario
+                    const lines = doc.splitTextToSize(text, maxWidth);
+                    
+                    let currentY = y;
+                    lines.forEach(line => {
+                        currentY = checkPageBreak(currentY, lineHeight);
+                        doc.text(line, x, currentY);
+                        currentY += lineHeight;
+                    });
+                    
+                    return currentY;
+                }
+                
+                // Intentar cargar el logo real
+                let logoBase64 = null;
+                try {
+                    logoBase64 = await imageToBase64('logo.jpg');
+                } catch (error) {
+                    console.log('Error al cargar logo:', error);
+                }
+                
+                // Logo en la parte superior izquierda
+                if (logoBase64) {
+                    // Usar imagen real del logo
+                    doc.addImage(logoBase64, 'JPEG', 20, 15, 30, 20);
+                    console.log('Logo de imagen agregado al PDF');
+                } else {
+                    // Usar versión de texto del logo
+                    doc.setFillColor(40, 167, 69); // Verde del logo
+                    doc.roundedRect(20, 15, 30, 20, 3, 3, 'F');
+                    
+                    // Texto del logo (simulando la imagen)
+                    doc.setFontSize(8);
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('NBTeam', 25, 25);
+                    doc.setFontSize(6);
+                    doc.text('IT', 25, 30);
+                    console.log('Logo de texto agregado al PDF');
+                }
+                
+                // Título principal (más a la derecha para dar espacio al logo)
+                doc.setFontSize(20);
+                doc.setTextColor(...primaryColor);
+                doc.setFont('helvetica', 'bold');
+                doc.text('FORMULARIO DE EMPLEADO', 60, 30);
+                
+                // Línea decorativa
+                doc.setDrawColor(...primaryColor);
+                doc.setLineWidth(0.5);
+                doc.line(20, 35, 190, 35);
+            
+            // Información del empleado
+            doc.setFontSize(12);
+            doc.setTextColor(...textColor);
+            doc.setFont('helvetica', 'normal');
+            
+            let yPosition = 50;
+            const lineHeight = 8;
+            
+            // Función auxiliar para agregar texto con verificación de página
+            function addText(label, value, isBold = false) {
+                yPosition = checkPageBreak(yPosition, lineHeight);
+                
+                if (isBold) {
+                    doc.setFont('helvetica', 'bold');
+                } else {
+                    doc.setFont('helvetica', 'normal');
+                }
+                
+                doc.text(label, 20, yPosition);
+                doc.setFont('helvetica', 'normal');
+                doc.text(value || 'No especificado', 80, yPosition);
+                yPosition += lineHeight;
+            }
+            
+            // Función auxiliar para agregar lista con verificación de página
+            function addList(title, items, indent = 25) {
+                yPosition = checkPageBreak(yPosition, lineHeight);
+                doc.setFont('helvetica', 'bold');
+                doc.text(title, 20, yPosition);
+                yPosition += lineHeight;
+                
+                doc.setFont('helvetica', 'normal');
+                items.forEach(item => {
+                    yPosition = checkPageBreak(yPosition, lineHeight);
+                    doc.text(`• ${item}`, indent, yPosition);
+                    yPosition += lineHeight;
+                });
+                yPosition += 5;
+            }
+            
+            // Agregar información del empleado usando funciones auxiliares
+            addText('Número de Empleado:', formData.employeeNumber);
+            addText('Nombre Completo:', formData.fullName);
+            
+            if (formData.emailPersonal && formData.emailPersonal.trim()) {
+                addText('Correo Electrónico Personal:', formData.emailPersonal);
+            }
+            
+            if (formData.rol && formData.rol.trim()) {
+                addText('Rol:', formData.rol);
+            }
+            
+            addText('Departamento:', formData.department);
+            
+            if (formData.centroCostos && formData.centroCostos.trim()) {
+                addText('Centro de Costos:', formData.centroCostos);
+            }
+            
+            addText('Tipo de Contrato:', formData.tipoContrato);
+            addText('Fecha de Inicio:', formData.startDate);
+            addText('Hardware (Laptop):', formData.hardware);
+            
+            // Detalles del hardware si están disponibles
+            if (formData.hardwareBrand || formData.hardwareModel || formData.hardwareSerial || formData.hardwareAccessories) {
+                yPosition = checkPageBreak(yPosition, lineHeight);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Detalles del Hardware:', 20, yPosition);
+                yPosition += lineHeight;
+                
+                doc.setFont('helvetica', 'normal');
+                if (formData.hardwareBrand) {
+                    yPosition = checkPageBreak(yPosition, lineHeight);
+                    doc.text(`• Marca: ${formData.hardwareBrand}`, 25, yPosition);
+                    yPosition += lineHeight;
+                }
+                if (formData.hardwareModel) {
+                    yPosition = checkPageBreak(yPosition, lineHeight);
+                    doc.text(`• Modelo: ${formData.hardwareModel}`, 25, yPosition);
+                    yPosition += lineHeight;
+                }
+                if (formData.hardwareSerial) {
+                    yPosition = checkPageBreak(yPosition, lineHeight);
+                    doc.text(`• Número de Serie: ${formData.hardwareSerial}`, 25, yPosition);
+                    yPosition += lineHeight;
+                }
+                if (formData.hardwareAccessories) {
+                    yPosition = checkPageBreak(yPosition, lineHeight);
+                    doc.setFont('helvetica', 'normal');
+                    // Usar la función auxiliar para texto largo
+                    yPosition = addTextWithPageBreak(`• Accesorios: ${formData.hardwareAccessories}`, 25, yPosition, { maxWidth: 160 });
+                }
+                yPosition += 5;
+            }
+            
+            // Capacitaciones
+            addList('Capacitaciones:', formData.trainings);
+            
+            // Software requerido
+            addList('Software Requerido:', formData.softwareRequirements);
+            
+            // Clientes asignados
+            if (formData.clients && formData.clients.length > 0) {
+                addList('Clientes Asignados:', formData.clients);
+            }
+            
+            // Observaciones
+            if (formData.observations && formData.observations.trim()) {
+                yPosition = checkPageBreak(yPosition, lineHeight);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Observaciones:', 20, yPosition);
+                yPosition += lineHeight;
+                
+                // Usar la función auxiliar para texto largo
+                yPosition = addTextWithPageBreak(formData.observations, 25, yPosition, { maxWidth: 160 });
+                yPosition += 5;
+            }
+            
+            // Fecha de generación
+            yPosition = checkPageBreak(yPosition, lineHeight);
+            doc.setFontSize(10);
+            doc.setTextColor(100, 100, 100);
+            doc.text(`Documento generado el ${new Date().toLocaleDateString('es-ES')}`, 20, yPosition);
+            
+            // Agregar pie de página a todas las páginas
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                
+                // Pie de página con logo
+                doc.setFontSize(8);
+                doc.setTextColor(150, 150, 150);
+                doc.text('NBTeam - IT Onboarding System', 20, pageHeight - 15);
+                
+                // Número de página (más hacia la izquierda para evitar conflicto con logo)
+                doc.text(`Página ${i} de ${pageCount}`, pageWidth - 60, pageHeight - 15);
+                
+                // Logo pequeño en el pie de página (más hacia la derecha)
+                if (logoBase64) {
+                    doc.addImage(logoBase64, 'JPEG', pageWidth - 25, pageHeight - 20, 12, 8);
+                } else {
+                    doc.setFillColor(40, 167, 69);
+                    doc.roundedRect(pageWidth - 25, pageHeight - 20, 12, 8, 2, 2, 'F');
+                    doc.setFontSize(5);
+                    doc.setTextColor(255, 255, 255);
+                    doc.text('NB', pageWidth - 22, pageHeight - 15);
+                }
+            }
+            
+            // Crear nombre de archivo
+            const employeeNumber = formData.employeeNumber || 'Sin_Numero';
+            const fileName = `Empleado_${employeeNumber}_${formData.fullName.replace(/\s+/g, '_')}.pdf`;
+            
+            // Descargar el PDF
+            doc.save(fileName);
+            console.log('PDF generado y descargado exitosamente');
+            
+            } catch (error) {
+                console.error('Error al generar PDF:', error);
+                showMessage('Error al generar PDF: ' + error.message, 'error');
+            }
+        }
+
+        // Función para generar PDF y guardar formulario
+        async function generatePDFAndSave() {
+            console.log('Iniciando guardado y generación de PDF...');
+            
+            try {
+                // Primero validar el formulario
+                const form = document.getElementById('employeeForm');
+                const formData = new FormData(form);
+                
+                const employeeNumber = formData.get('employeeNumber');
+                const fullName = formData.get('fullName');
+                const emailPersonal = formData.get('emailPersonal');
+                const rol = formData.get('rol');
+                const department = formData.get('department');
+                const centroCostos = formData.get('centroCostos');
+                const tipoContrato = formData.get('tipoContrato');
+                const startDate = formData.get('startDate');
+                const hardware = formData.get('hardware');
+                
+                // Obtener detalles del hardware
+                const hardwareBrand = formData.get('hardwareBrand') || '';
+                const hardwareModel = formData.get('hardwareModel') || '';
+                const hardwareSerial = formData.get('hardwareSerial') || '';
+                const hardwareAccessories = formData.get('hardwareAccessories') || '';
+                
+                // Obtener capacitaciones seleccionadas
+                const selectedTrainings = Array.from(document.querySelectorAll('.training-list input[type="checkbox"]:checked'))
+                    .map(checkbox => checkbox.value);
+                
+                // Obtener software seleccionado
+                const selectedSoftware = Array.from(document.querySelectorAll('#softwareList input[type="checkbox"]:checked'))
+                    .map(checkbox => checkbox.value);
+                
+                // Obtener clientes seleccionados
+                const selectedClients = Array.from(document.querySelectorAll('.clients-list input[type="checkbox"]:checked'))
+                    .map(checkbox => checkbox.value);
+                
+                // Obtener observaciones
+                const observations = formData.get('observations') || '';
+                
+                // Validaciones
+                if (!fullName || !department || !tipoContrato || !startDate || !hardware) {
+                    showMessage('Por favor, completa todos los campos obligatorios.', 'error');
+                    return;
+                }
+                
+                if (selectedTrainings.length === 0) {
+                    showMessage('Por favor, selecciona al menos una capacitación.', 'error');
+                    return;
+                }
+                
+                if (selectedSoftware.length === 0) {
+                    showMessage('Por favor, selecciona al menos un software requerido.', 'error');
+                    return;
+                }
+                
+                // Obtener usuario actual de la sesión
+                let currentUser = 'Usuario Anónimo';
+                try {
+                    const userResponse = await fetch('/api/auth/check', {
+                        credentials: 'include'
+                    });
+                    const userResult = await userResponse.json();
+                    if (userResult.success && userResult.user) {
+                        currentUser = userResult.user.username || userResult.user.name || 'Usuario';
+                    }
+                } catch (error) {
+                    console.log('No se pudo obtener usuario actual:', error);
+                }
+
+                // Crear objeto con los datos
+                const data = {
+                    employeeNumber,
+                    fullName,
+                    emailPersonal,
+                    rol,
+                    department,
+                    centroCostos,
+                    tipoContrato,
+                    startDate,
+                    hardware,
+                    hardwareBrand,
+                    hardwareModel,
+                    hardwareSerial,
+                    hardwareAccessories,
+                    trainings: selectedTrainings,
+                    softwareRequirements: selectedSoftware,
+                    clients: selectedClients,
+                    observations: observations,
+                    createdBy: currentUser
+                };
+                
+                console.log('Guardando formulario...');
+                
+                // Guardar en base de datos
+                const response = await fetch('/api/formularios', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    console.log('Formulario guardado exitosamente');
+                    showMessage('Formulario guardado exitosamente', 'success');
+                    
+                    // Ahora generar el PDF
+                    console.log('Generando PDF...');
+                    try {
+                        await generatePDFDocument(data);
+                        showMessage('PDF generado y descargado exitosamente', 'success');
+                        
+                        // Limpiar el formulario después de generar PDF
+                        clearForm();
+                        
+                    } catch (pdfError) {
+                        console.error('Error generando PDF:', pdfError);
+                        showMessage('Formulario guardado, pero error al generar PDF: ' + pdfError.message, 'warning');
+                    }
+                } else {
+                    console.error('Error guardando formulario:', result.error);
+                    showMessage('Error al guardar formulario: ' + result.error, 'error');
+                }
+                
+            } catch (error) {
+                console.error('Error en generatePDFAndSave:', error);
+                showMessage('Error: ' + error.message, 'error');
+            }
+        }
+
+        // Función para limpiar el formulario
+        function clearForm() {
+            console.log('Limpiando formulario...');
+            
+            // Limpiar campos de texto
+            document.getElementById('employeeNumber').value = '';
+            document.getElementById('fullName').value = '';
+            document.getElementById('emailPersonal').value = '';
+            document.getElementById('rol').value = '';
+            document.getElementById('department').value = '';
+            document.getElementById('centroCostos').value = '';
+            document.getElementById('tipoContrato').value = '';
+            document.getElementById('startDate').value = '';
+            document.getElementById('hardwareBrand').value = '';
+            document.getElementById('hardwareModel').value = '';
+            document.getElementById('hardwareSerial').value = '';
+            document.getElementById('hardwareAccessories').value = '';
+            document.getElementById('observations').value = '';
+            
+            // Limpiar checkboxes de capacitaciones
+            document.querySelectorAll('.training-list input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            // Limpiar checkboxes de software
+            document.querySelectorAll('#softwareList input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            // Limpiar checkboxes de clientes
+            document.querySelectorAll('.clients-list input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            // Resetear selección de hardware
+            document.querySelectorAll('input[name="hardware"]').forEach(radio => {
+                radio.checked = false;
+            });
+            
+            console.log('Formulario limpiado exitosamente');
+        }
+
+        document.getElementById('employeeForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            console.log('Formulario enviado');
+            
+            const formData = new FormData(this);
+            const employeeNumber = formData.get('employeeNumber');
+            const fullName = formData.get('fullName');
+            const emailPersonal = formData.get('emailPersonal');
+            const rol = formData.get('rol');
+            const department = formData.get('department');
+            const centroCostos = formData.get('centroCostos');
+            const tipoContrato = formData.get('tipoContrato');
+            const startDate = formData.get('startDate');
+            const hardware = formData.get('hardware');
+            
+            // Obtener detalles del hardware
+            const hardwareBrand = formData.get('hardwareBrand') || '';
+            const hardwareModel = formData.get('hardwareModel') || '';
+            const hardwareSerial = formData.get('hardwareSerial') || '';
+            const hardwareAccessories = formData.get('hardwareAccessories') || '';
+            
+            console.log('Datos del formulario:', { 
+                employeeNumber, 
+                fullName,
+                emailPersonal,
+                rol,
+                department, 
+                startDate, 
+                hardware,
+                hardwareBrand,
+                hardwareModel,
+                hardwareSerial,
+                hardwareAccessories
+            });
+            
+            // Debug: Verificar valores de hardware
+            console.log('🔍 Debug Hardware:', {
+                hardwareBrand: hardwareBrand,
+                hardwareModel: hardwareModel,
+                hardwareSerial: hardwareSerial,
+                hardwareAccessories: hardwareAccessories
+            });
+            
+            // Obtener capacitaciones seleccionadas
+            const selectedTrainings = Array.from(document.querySelectorAll('.training-list input[type="checkbox"]:checked'))
+                .map(checkbox => checkbox.value);
+            
+            // Obtener software seleccionado
+            const selectedSoftware = Array.from(document.querySelectorAll('#softwareList input[type="checkbox"]:checked'))
+                .map(checkbox => checkbox.value);
+            
+            // Obtener clientes seleccionados
+            const selectedClients = Array.from(document.querySelectorAll('.clients-list input[type="checkbox"]:checked'))
+                .map(checkbox => checkbox.value);
+            
+            // Obtener observaciones
+            const observations = formData.get('observations') || '';
+            
+            console.log('Capacitaciones seleccionadas:', selectedTrainings);
+            console.log('Software seleccionado:', selectedSoftware);
+            console.log('Clientes seleccionados:', selectedClients);
+            console.log('Observaciones:', observations);
+            
+            // Validaciones
+            if (!fullName || !department || !tipoContrato || !startDate || !hardware) {
+                console.log('Error: Campos obligatorios faltantes');
+                showMessage('Por favor, completa todos los campos obligatorios.', 'error');
+                return;
+            }
+            
+            if (selectedTrainings.length === 0) {
+                console.log('Error: No hay capacitaciones seleccionadas');
+                showMessage('Por favor, selecciona al menos una capacitación.', 'error');
+                return;
+            }
+            
+            if (selectedSoftware.length === 0) {
+                console.log('Error: No hay software seleccionado');
+                showMessage('Por favor, selecciona al menos un software requerido.', 'error');
+                return;
+            }
+            
+            // Obtener usuario actual de la sesión
+            let currentUser = 'Usuario Anónimo';
+            try {
+                const userResponse = await fetch('/api/auth/check', {
+                    credentials: 'include'
+                });
+                const userResult = await userResponse.json();
+                if (userResult.success && userResult.user) {
+                    currentUser = userResult.user.username || userResult.user.name || 'Usuario';
+                }
+            } catch (error) {
+                console.log('No se pudo obtener usuario actual:', error);
+            }
+
+            // Crear objeto con los datos
+            const data = {
+                employeeNumber,
+                fullName,
+                emailPersonal,
+                rol,
+                department,
+                centroCostos,
+                tipoContrato,
+                startDate,
+                hardware,
+                hardwareBrand,
+                hardwareModel,
+                hardwareSerial,
+                hardwareAccessories,
+                trainings: selectedTrainings,
+                softwareRequirements: selectedSoftware,
+                clients: selectedClients,
+                observations: observations,
+                createdBy: currentUser
+            };
+            
+            console.log('Datos finales:', data);
+            
+            // Solo guardar en base de datos
+            console.log('Guardando en base de datos...');
+            try {
+                const response = await fetch('/api/formularios', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('¡Formulario guardado exitosamente!', 'success');
+                } else {
+                    showMessage('Error al guardar: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Error de conexión: ' + error.message, 'error');
+            }
+            
+            // Limpiar formulario después de 2 segundos
+            setTimeout(() => {
+                this.reset();
+                showMessage('');
+            }, 2000);
+        });
+
+        // Función para mostrar mensajes
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            if (text) {
+                messageDiv.innerHTML = `<div class="message ${type}">${text}</div>`;
+            } else {
+                messageDiv.innerHTML = '';
+            }
+        }
+
+        // Función para cargar clientes dinámicamente
+        async function loadClientes() {
+            try {
+                const response = await fetch('/api/clientes/activos');
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayClientes(data.data);
+                } else {
+                    console.error('Error cargando clientes:', data.error);
+                    document.getElementById('clientsList').innerHTML = '<div class="error">Error al cargar clientes</div>';
+                }
+            } catch (error) {
+                console.error('Error cargando clientes:', error);
+                document.getElementById('clientsList').innerHTML = '<div class="error">Error al cargar clientes</div>';
+            }
+        }
+
+        // Función para mostrar clientes en el formulario
+        function displayClientes(clientes) {
+            const clientsList = document.getElementById('clientsList');
+            
+            if (clientes.length === 0) {
+                clientsList.innerHTML = '<div class="loading">No hay clientes disponibles</div>';
+                return;
+            }
+            
+            clientsList.innerHTML = clientes.map(cliente => `
+                <label class="checkbox-label">
+                    <input type="checkbox" value="${cliente.nombre}" />
+                    <span class="checkbox-text">${cliente.nombre}</span>
+                </label>
+            `).join('');
+        }
+
+        // Función para cargar software dinámicamente
+        async function loadSoftware() {
+            try {
+                const response = await fetch('/api/software/activos');
+                const data = await response.json();
+                
+                if (data.success) {
+                    displaySoftware(data.data);
+                } else {
+                    console.error('Error cargando software:', data.error);
+                    document.getElementById('softwareList').innerHTML = '<div class="error">Error al cargar software</div>';
+                }
+            } catch (error) {
+                console.error('Error cargando software:', error);
+                document.getElementById('softwareList').innerHTML = '<div class="error">Error al cargar software</div>';
+            }
+        }
+
+        // Función para mostrar software en el formulario
+        function displaySoftware(software) {
+            const softwareList = document.getElementById('softwareList');
+            
+            if (software.length === 0) {
+                softwareList.innerHTML = '<div class="loading">No hay software disponible</div>';
+                return;
+            }
+            
+            softwareList.innerHTML = software.map(s => `
+                <label class="checkbox-label">
+                    <input type="checkbox" value="${s.nombre}" />
+                    <span class="checkbox-text">${s.nombre}</span>
+                </label>
+            `).join('');
+        }
+
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 DOM cargado, inicializando...');
+            
+            // Cargar clientes y software dinámicamente
+            loadClientes();
+            loadSoftware();
+            
+            // Función para intentar generar checkboxes con reintentos
+            function attemptGenerateCheckboxes(attempt = 1, maxAttempts = 5) {
+                console.log(`🔄 Intento ${attempt}/${maxAttempts} de generar checkboxes...`);
+                
+                const success = generateSoftwareCheckboxes();
+                
+                if (success) {
+                    console.log('✅ Checkboxes generados exitosamente');
+                    
+                    // Debug: Verificar que los checkboxes se generaron
+                    setTimeout(() => {
+                        const softwareCheckboxes = document.querySelectorAll('#softwareList input[type="checkbox"]');
+                        const trainingCheckboxes = document.querySelectorAll('.training-list input[type="checkbox"]');
+                        console.log('Checkboxes de software generados:', softwareCheckboxes.length);
+                        console.log('Checkboxes de capacitaciones encontrados:', trainingCheckboxes.length);
+                        
+                        if (softwareCheckboxes.length === 0) {
+                            console.error('❌ No se generaron checkboxes de software');
+                        } else {
+                            console.log('✅ Checkboxes de software generados correctamente');
+                        }
+                    }, 200);
+                } else if (attempt < maxAttempts) {
+                    console.log(`⏳ Reintentando en 500ms... (intento ${attempt + 1})`);
+                    setTimeout(() => {
+                        attemptGenerateCheckboxes(attempt + 1, maxAttempts);
+                    }, 500);
+                } else {
+                    console.error('❌ No se pudieron generar checkboxes después de', maxAttempts, 'intentos');
+                }
+            }
+            
+            // Intentar generar checkboxes
+            setTimeout(() => {
+                attemptGenerateCheckboxes();
+            }, 100);
+            
+            // Los campos de hardware ahora siempre están visibles
+            // No necesitamos mostrar/ocultar campos
+        });
+
+        // Función para ir al dashboard
+        function goToDashboard() {
+            window.location.href = '/dashboard.html';
+        }
+
+        // Función para ir a la lista de formularios
+        function goToList() {
+            window.location.href = '/list.html';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fix de Sesión - IT Solutions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .header {
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            margin: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .instructions {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .instructions h3 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+
+        .instructions ol {
+            color: #6c757d;
+            line-height: 1.6;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+        }
+
+        .cookie-info {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .cookie-info h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .cookie-info pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Fix de Sesión</h1>
+            <p>Solución definitiva para problemas de login</p>
+        </div>
+
+        <div id="status" class="status info" style="display: none;"></div>
+
+        <div class="cookie-info">
+            <h4>🍪 Estado de Cookies:</h4>
+            <pre id="cookieStatus">Verificando...</pre>
+        </div>
+
+        <button id="fixBtn" class="btn btn-primary" onclick="fixSession()">
+            🔧 Aplicar Fix
+        </button>
+
+        <button id="loginBtn" class="btn btn-success" onclick="goToLogin()" style="display: none;">
+            🔐 Ir al Login
+        </button>
+
+        <button id="incognitoBtn" class="btn btn-warning" onclick="openIncognito()">
+            🕵️ Abrir Ventana Incógnita
+        </button>
+
+        <div class="instructions">
+            <h3>📋 Instrucciones:</h3>
+            <ol>
+                <li>Haz clic en "Aplicar Fix" para limpiar cookies problemáticas</li>
+                <li>Espera a que se complete la limpieza</li>
+                <li>Haz clic en "Ir al Login"</li>
+                <li>Si aún hay problemas, usa "Ventana Incógnita"</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.innerHTML = message;
+            status.className = `status ${type}`;
+            status.style.display = 'block';
+        }
+
+        function updateCookieStatus() {
+            const cookieStatus = document.getElementById('cookieStatus');
+            const cookies = document.cookie;
+            
+            if (cookies.includes('next-auth.session-token')) {
+                cookieStatus.textContent = '❌ PROBLEMA: Cookies de NextAuth detectadas\n' + cookies;
+                cookieStatus.style.color = '#dc3545';
+            } else if (cookies.includes('connect.sid')) {
+                cookieStatus.textContent = '✅ Cookies de sesión correctas\n' + cookies;
+                cookieStatus.style.color = '#28a745';
+            } else {
+                cookieStatus.textContent = 'ℹ️ Sin cookies de sesión\n' + cookies;
+                cookieStatus.style.color = '#6c757d';
+            }
+        }
+
+        function fixSession() {
+            const btn = document.getElementById('fixBtn');
+            const loginBtn = document.getElementById('loginBtn');
+            
+            btn.disabled = true;
+            btn.innerHTML = '🔄 Aplicando fix...';
+            
+            // Limpiar cookies específicas de NextAuth sin afectar nuestra sesión
+            const cookiesToClear = [
+                'next-auth.session-token',
+                'next-auth.csrf-token', 
+                'next-auth.callback-url',
+                'next-auth.state'
+            ];
+            
+            cookiesToClear.forEach(cookieName => {
+                // Limpiar para el dominio actual
+                document.cookie = `${cookieName}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
+                // Limpiar para subdominios
+                document.cookie = `${cookieName}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;domain=localhost;`;
+                // Limpiar para .localhost
+                document.cookie = `${cookieName}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;domain=.localhost;`;
+            });
+            
+            setTimeout(() => {
+                updateCookieStatus();
+                showStatus('✅ Fix aplicado exitosamente. Cookies de NextAuth eliminadas.', 'success');
+                
+                btn.style.display = 'none';
+                loginBtn.style.display = 'inline-flex';
+            }, 1500);
+        }
+
+        function goToLogin() {
+            window.location.href = '/login.html';
+        }
+
+        function openIncognito() {
+            // Crear URL para ventana incógnita
+            const url = window.location.origin + '/login.html';
+            window.open(url, '_blank', 'noopener,noreferrer');
+        }
+
+        // Verificar estado de cookies al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCookieStatus();
+            
+            // Actualizar cada 2 segundos
+            setInterval(updateCookieStatus, 2000);
+        });
+    </script>
+</body>
+</html>
+
+
+
+

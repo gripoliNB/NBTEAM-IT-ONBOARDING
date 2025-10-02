@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NBTeam IT Onboarding</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            margin: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🏢</div>
+        <h1>NBTeam IT Onboarding</h1>
+        <p class="subtitle">Sistema de gestión de formularios de empleados</p>
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Verificando autenticación...</p>
+        </div>
+
+        <div id="status" class="status" style="display: none;"></div>
+
+        <div id="actions" style="display: none;">
+            <a href="/login.html" class="btn btn-primary">🔐 Iniciar Sesión</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Limpiar cookies de NextAuth del lado del cliente
+                document.cookie.split(";").forEach(function(c) { 
+                    const cookie = c.trim();
+                    if (cookie.startsWith('next-auth.')) {
+                        document.cookie = cookie.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+                    }
+                });
+
+                // Verificar autenticación
+                const response = await fetch('/api/auth/check', {
+                    credentials: 'include'
+                });
+                
+                const result = await response.json();
+                
+                const loading = document.getElementById('loading');
+                const status = document.getElementById('status');
+                const actions = document.getElementById('actions');
+
+                if (result.success && result.authenticated) {
+                    // Usuario autenticado, redirigir al dashboard
+                    status.innerHTML = '✅ Usuario autenticado. Redirigiendo...';
+                    status.className = 'status success';
+                    status.style.display = 'block';
+                    loading.style.display = 'none';
+                    
+                    setTimeout(() => {
+                        window.location.href = '/dashboard.html';
+                    }, 1000);
+                } else {
+                    // Usuario no autenticado, mostrar opciones
+                    status.innerHTML = 'ℹ️ Inicia sesión para acceder al sistema';
+                    status.className = 'status error';
+                    status.style.display = 'block';
+                    loading.style.display = 'none';
+                    actions.style.display = 'block';
+                }
+
+            } catch (error) {
+                console.error('Error verificando autenticación:', error);
+                
+                const loading = document.getElementById('loading');
+                const status = document.getElementById('status');
+                const actions = document.getElementById('actions');
+
+                loading.style.display = 'none';
+                status.innerHTML = '⚠️ Error de conexión. Intenta iniciar sesión.';
+                status.className = 'status error';
+                status.style.display = 'block';
+                actions.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+
+

@@ -1,0 +1,176 @@
+{
+  "info": {
+    "name": "Onboarding IT API",
+    "description": "Colección de requests para la API de Onboarding IT",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        }
+      }
+    },
+    {
+      "name": "Software Catalog",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/software-catalog",
+          "host": ["{{base_url}}"],
+          "path": ["api", "software-catalog"]
+        }
+      }
+    },
+    {
+      "name": "Create Onboarding",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"employeeNumber\": \"EMP001\",\n  \"fullName\": \"Juan Pérez García\",\n  \"department\": \"Desarrollo\",\n  \"startDate\": \"2024-01-15\",\n  \"softwareRequirements\": [\"email\", \"microsoft365\", \"teams\", \"project\"],\n  \"otherSoftware\": \"\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/onboardings",
+          "host": ["{{base_url}}"],
+          "path": ["api", "onboardings"]
+        }
+      }
+    },
+    {
+      "name": "Get All Onboardings",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/onboardings",
+          "host": ["{{base_url}}"],
+          "path": ["api", "onboardings"]
+        }
+      }
+    },
+    {
+      "name": "Search Onboardings",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/onboardings?q=Juan&department=Desarrollo&page=1&size=10&sort=-startDate",
+          "host": ["{{base_url}}"],
+          "path": ["api", "onboardings"],
+          "query": [
+            {
+              "key": "q",
+              "value": "Juan"
+            },
+            {
+              "key": "department",
+              "value": "Desarrollo"
+            },
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "size",
+              "value": "10"
+            },
+            {
+              "key": "sort",
+              "value": "-startDate"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Onboarding by Employee Number",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/onboardings/EMP001",
+          "host": ["{{base_url}}"],
+          "path": ["api", "onboardings", "EMP001"]
+        }
+      }
+    },
+    {
+      "name": "Update Onboarding",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"fullName\": \"Juan Pérez García Actualizado\",\n  \"department\": \"Desarrollo Senior\",\n  \"softwareRequirements\": [\"email\", \"microsoft365\", \"teams\", \"project\", \"powerbi\"]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/onboardings/EMP001",
+          "host": ["{{base_url}}"],
+          "path": ["api", "onboardings", "EMP001"]
+        }
+      }
+    },
+    {
+      "name": "Export Onboardings",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/onboardings/export?department=Desarrollo",
+          "host": ["{{base_url}}"],
+          "path": ["api", "onboardings", "export"],
+          "query": [
+            {
+              "key": "department",
+              "value": "Desarrollo"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Delete Onboarding",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/onboardings/EMP001",
+          "host": ["{{base_url}}"],
+          "path": ["api", "onboardings", "EMP001"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3001",
+      "type": "string"
+    }
+  ]
+}
+
+
+
+
+
+

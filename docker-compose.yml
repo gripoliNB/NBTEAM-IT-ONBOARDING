@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  nbteam-onboarding:
+    build: .
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./formularios.db:/app/formularios.db
+      - ./logo.jpg:/app/logo.jpg
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - HOST=0.0.0.0
+    restart: unless-stopped
